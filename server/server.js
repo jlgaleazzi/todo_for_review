@@ -1,16 +1,28 @@
 const express = require('express')
+const db = require('./db.js');
 const app = express()
 const port = 3000
-
+app.use(express.json());
 app.use(express.static(__dirname +'/../dist'))
 app.listen(port, () => console.log("Server listening on porty",port));
 
 app.get('/todos', (req,res) => {
-  console.log('get all todos from database');
-  res.sendStatus(200);
+  db.getTodos((err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  })
 })
 
-app.post('/todos', (req,res)=> {
-  console.log('add todo to databes')
-  res.sendStatus(201);
+app.post('/todos', (req,res) => {
+  //var todo = JSON.parse(req.body)
+    db.addTodo(req.body.todo, (err,result) => {
+      if (err) {
+        res.send(err)
+      } else {
+        res.send(JSON.stringify(result));
+      }
+    })
 })
